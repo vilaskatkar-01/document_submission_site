@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Document Submission</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <h1>📄 Doc<span>Submit</span></h1>
+            </div>
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="user-name">{{ current_user.username }}</div>
+                    <div class="user-role">{{ current_user.role }}</div>
+                </div>
+                <div class="user-avatar">{{ current_user.username[0].upper() }}</div>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+<div style="margin-bottom: 15px;">
+    <a href="/" class="btn btn-primary" style="padding: 8px 20px; font-size: 14px; text-decoration: none; display: inline-block;">
+        ⬅ Back to Upload
+    </a>
+</div>
+
+        <!-- Navigation -->
+        <div class="nav-links" style="margin-bottom: 20px;">
+            <a href="/dashboard" class="active">📊 Dashboard</a>
+            <a href="/">📤 Upload</a>
+            {% if user_role == 'admin' %}
+                <a href="/admin/users">👥 Users</a>
+            {% endif %}
+            <a href="/logout" class="logout">🚪 Logout</a>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ documents|length }}</div>
+                <div class="stat-label">📄 Total Documents</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-number">{{ documents|selectattr(3, 'equalto', 'Approved')|list|length }}</div>
+                <div class="stat-label">✅ Approved</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-number">{{ documents|selectattr(3, 'equalto', 'Rejected')|list|length }}</div>
+                <div class="stat-label">❌ Rejected</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-number">{{ documents|selectattr(3, 'equalto', 'Pending')|list|length }}</div>
+                <div class="stat-label">⏳ Pending</div>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search documents..." onkeyup="filterTable()">
+            <select id="statusFilter" onchange="filterTable()">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+            <select id="categoryFilter" onchange="filterTable()">
+                <option value="">All Categories</option>
+                <option value="General">General</option>
+                <option value="Invoices">Invoices</option>
+                <option value="Reports">Reports</option>
+                <option value="Contracts">Contracts</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table id="documentTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Filename</th>
+                        <th>Category</th>
+                        <th>Submitted By</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td>{{ doc[0] }}</td>
+                        <td>{{ doc[1] }}</td>
+                        <td><span class="badge" style="background: #e9ecef;">{{ doc[5] }}</span></td>
+                        <td>{{ doc[4] }}</td>
+                        <td>{{ doc[2] }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if doc[3] == 'Approved' %}badge-approved
+                                {% elif doc[3] == 'Rejected' %}badge-rejected
+                                {% else %}badge-pending{% endif %}">
+                                {{ doc[3] }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if user_role == 'admin' %}
+                                <a href="/update_status/{{ doc[0] }}/Approved" class="btn btn-success btn-sm">✅</a>
+                                <a href="/update_status/{{ doc[0] }}/Rejected" class="btn btn-danger btn-sm">❌</a>
+                            {% endif %}
+                            <a href="/delete/{{ doc[0] }}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this document?')">🗑️</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if not documents %}
+            <p style="text-align: center; color: #666; margin-top: 40px;">No documents submitted yet.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function filterTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const table = document.getElementById('documentTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const filename = row.cells[1].textContent.toLowerCase();
+                const status = row.cells[5].textContent.trim();
+                const category = row.cells[2].textContent.trim();
+                
+                let show = true;
+                
+                if (input && !filename.includes(input)) {
+                    show = false;
+                }
+                if (statusFilter && status !== statusFilter) {
+                    show = false;
+                }
+                if (categoryFilter && category !== categoryFilter) {
+                    show = false;
+                }
+                
+                row.style.display = show ? '' : 'none';
+            }
+        }
+    </script>
+</body>
+</html>
