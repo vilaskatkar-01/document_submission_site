@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - DocSubmit</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container auth-container">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="font-size: 48px;">📄</h1>
+            <h1>Doc<span style="color: #667eea;">Submit</span></h1>
+            <p style="color: #666;">Login to your account</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="container auth-container">
+    <!-- Back Button -->
+    <div style="margin-bottom: 15px;">
+        <a href="/" style="color: #667eea; text-decoration: none; font-size: 14px;">
+            ⬅ Back to Home
+        </a>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 30px;">
+        <!-- rest of the login page -->
+        
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="btn btn-primary">🔐 Login</button>
+        </form>
+        
+        <div class="auth-links">
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+            <p style="font-size: 12px; color: #999; margin-top: 10px;">Demo: admin / admin123</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DocSubmit - Document Submission</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container" style="max-width: 600px;">
+        <div class="header">
+            <div class="logo">
+                <h1>📄 Doc<span>Submit</span></h1>
+            </div>
+            {% if current_user.is_authenticated %}
+                <div class="user-info">
+                    <span style="color: #666;">👋 {{ current_user.username }}</span>
+                    <a href="/logout" style="color: #dc3545; text-decoration: none;">Logout</a>
+                </div>
+            {% else %}
+                <div>
+                    <a href="/login" style="color: #667eea; text-decoration: none;">Login</a> |
+                    <a href="/register" style="color: #667eea; text-decoration: none;">Register</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Back Button -->
+{% if current_user.is_authenticated %}
+    <div style="margin-bottom: 15px;">
+        <a href="/dashboard" class="btn btn-primary" style="padding: 8px 20px; font-size: 14px; text-decoration: none; display: inline-block;">
+            📊 Go to Dashboard
+        </a>
+    </div>
+{% endif %}
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if current_user.is_authenticated %}
+            <h2>📤 Upload Document</h2>
+            <p style="color: #666; margin-bottom: 20px;">Submit your document for review. Supported formats: PDF, Word, Images, etc.</p>
+            
+            <form action="/submit" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="category">📂 Category</label>
+                    <select id="category" name="category">
+                        <option value="General">General</option>
+                        <option value="Invoices">Invoices</option>
+                        <option value="Reports">Reports</option>
+                        <option value="Contracts">Contracts</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="document">📎 Choose File</label>
+                    <div class="upload-area" onclick="document.getElementById('document').click()">
+                        <p style="font-size: 48px; margin-bottom: 10px;">📁</p>
+                        <p style="color: #666;">Click to browse or drag and drop</p>
+                        <p style="color: #999; font-size: 12px;">Max file size: 16MB</p>
+                    </div>
+                    <input type="file" id="document" name="document" required style="display: none;">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">🚀 Upload Document</button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="/dashboard" style="color: #667eea; text-decoration: none;">📊 View Dashboard →</a>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 40px 0;">
+                <p style="font-size: 48px;">🔐</p>
+                <h2>Welcome to DocSubmit</h2>
+                <p style="color: #666; margin: 20px 0;">Please login or register to submit documents.</p>
+                <a href="/login" class="btn btn-primary">Login</a>
+                <a href="/register" class="btn" style="background: #f0f0f0; color: #333; margin-left: 10px;">Register</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
