@@ -33,7 +33,11 @@ A web-based document submission system built with Flask, SQLite, and Python.
 - pip
 
 ### Steps
-1. Clone the repository
-```bash
-git clone https://github.com/yourusername/document-submission-system.git
-cd document-submission-system
+STEP 1 : Download The Zip File Of Project
+STEP 2 : Then The Unzip The File Extract All File
+STEP 3 : We Need Vs Code Or Any IDE,And With That have A Pythob Installed, 
+STEP 4 : Open Your Project Folder In VS CDOE and Open The Terminal 
+STEP 5 : create the virtual enviroment with this python -m venv .venv 
+STEP 6 :.venv\scripts\activate
+SETP 7 : Run This Command-->  pip install django mysqlclient pillow
+STEP 8 : Enjoy The Project
